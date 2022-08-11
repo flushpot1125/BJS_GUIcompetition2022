@@ -54,10 +54,12 @@
         var scene = null;
         var sceneToRender = null;
         var createDefaultEngine = function() { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true,  disableWebGL2Support: false}); };
-        var createScene = function () {
+     var createScene = function () {
     // This creates a basic Babylon Scene object (non-mesh)
     const scene = new BABYLON.Scene(engine);
     scene.clearColor = "#000000";
+
+    scene.debugLayer.show();
 
     // This creates and positions a free camera (non-mesh)
     const camera = new BABYLON.ArcRotateCamera("camera", BABYLON.Tools.ToRadians(90), BABYLON.Tools.ToRadians(65), 10, BABYLON.Vector3.Zero(), scene);
@@ -77,6 +79,7 @@
 	const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:10000.0}, scene);
 	const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
 	skyboxMaterial.backFaceCulling = false;
+    /*
     const files = [
         "textures/Space/space_left.jpg",
         "textures/Space/space_up.jpg",
@@ -85,73 +88,53 @@
         "textures/Space/space_down.jpg",
         "textures/Space/space_back.jpg",
     ];
-	skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture.CreateFromImages(files, scene);
-	skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    */
+	//skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture.CreateFromImages(files, scene);
+	//skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 	skyboxMaterial.disableLighting = true;
-	skybox.material = skyboxMaterial;		
+	skybox.material = skyboxMaterial;	
+    
+    
+    //Load glb character model
+    // 1. character
+    var assetsManager_character = new BABYLON.AssetsManager(scene);
+    var meshTask_character = assetsManager_character.addMeshTask("3dmodels", "", "./models/", "character_GunShotAnim.glb");
+    assetsManager_character.load();
+    assetsManager_character.onFinish = function (tasks) {
+            var gunObj = scene.getTransformNodesById ("Gun");
+            console.log(gunObj);
+         //   gunObj.position = new BABYLON.Vector3(-0.2,1.4,0.2); //なぜか効かなかった
+         //   gunObj.scaling = new BABYLON.Vector3(6,10,6);
 
-    async function loadGUI() {
-        const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("GUI", true, scene);
-        // Visit gui.babylonjs.com/#CITCWC#51 to edit the GUI
-        await advancedTexture.parseFromSnippetAsync("#CITCWC#51");
-        const tabButtons = advancedTexture.getControlByName("Tabs").children;
-        const tabContent = {
-            "Character": advancedTexture.getControlByName("CharacterTab"),
-            "Inventory": advancedTexture.getControlByName("InventoryTab"),
-            "Journal": advancedTexture.getControlByName("QuestTab"),
-            "Starmap": advancedTexture.getControlByName("StarmapTab")
-        };
-        let activeTab = "";
-        function setActiveTab(tabName) {
-            if (activeTab === tabName) return;
-            // hide the old tab
-            if (tabContent[activeTab]) {
-                tabContent[activeTab].isVisible = false;
-            }
-            activeTab = tabName;
-            for(const button of tabButtons) {
-                // update the button colors
-                if (activeTab === button.name) {
-                    button.color = "#E4D9B9FF";
-                } else {
-                    button.color = "#808080FF";
-                }
-            }
-            // show the new tab
-            if (tabContent[activeTab]) {
-                tabContent[activeTab].isVisible = true;
-                tabContent[activeTab].left = "0%";
-                tabContent[activeTab].isPointerBlocker = false;
-            }
-        };
-        // add pointer events to each button to switch the tab over
-        for(const tabButton of tabButtons) {
-            tabButton.onPointerDownObservable.add(() => setActiveTab(tabButton.name));
-        }
-        setActiveTab("Journal");
-        scene.onKeyboardObservable.add((ev) => {
-            if (ev.event.key === "Escape") {
-                advancedTexture.rootContainer.isVisible = !advancedTexture.rootContainer.isVisible;
-            }
-        }, BABYLON.KeyboardEventTypes.KEYUP);
+        
+    };
 
-    }
-    loadGUI();
 
-    // Textures from: https://www.solarsystemscope.com/textures/
-    const planet = BABYLON.MeshBuilder.CreateSphere("sphere", {diameter: 200, segments: 32}, scene);
-    planet.position.x = 1000;
-    const marsMat = new BABYLON.StandardMaterial("mars", scene);
-    marsMat.diffuseTexture = new BABYLON.Texture("https://darraghjburke.github.io/MyAssets/2k_mars.jpg", scene);
-    planet.material = marsMat;
 
-    const sun = BABYLON.MeshBuilder.CreateSphere("sun", {diameter: 400, segments: 32}, scene);
-    sun.position.y = 700;
-    sun.position.x = -5000;
-    const sunMat = new BABYLON.StandardMaterial("sun", scene);
-    sunMat.diffuseTexture = new BABYLON.Texture("https://darraghjburke.github.io/MyAssets/2k_sun.jpg", scene);
-    sunMat.emissiveColor = new BABYLON.Color4(1,1,1,1);
-    sun.material = sunMat;
+    //2. ruined church
+    var assetsManager_ruinedChurch = new BABYLON.AssetsManager(scene);
+    var meshTask_ruinedChurch = assetsManager_ruinedChurch.addMeshTask("3dmodels", "", "./models/", "RuinedChurch.glb");
+    assetsManager_ruinedChurch.load();
+
+    //3. Enemy
+    var assetsManager_enemy = new BABYLON.AssetsManager(scene);
+    var meshTask_enemy = assetsManager_enemy.addMeshTask("3dmodels", "", "./models/", "DeathEnemy.glb");
+    assetsManager_enemy.load();
+    assetsManager_enemy.onFinish = function (tasks) {
+       // const evilFlameParticleJson = {"name":"CPU particle system","id":"default system","capacity":10000,"disposeOnStop":false,"manualEmitCount":-1,"emitter":[0,0,0],"particleEmitterType":{"type":"BoxParticleEmitter","direction1":[0,1,0],"direction2":[0,1,0],"minEmitBox":[-0.5,-0.5,-0.5],"maxEmitBox":[0.5,0.5,0.5]},"texture":{"tags":null,"url":"https://assets.babylonjs.com/textures/flare.png","uOffset":0,"vOffset":0,"uScale":1,"vScale":1,"uAng":0,"vAng":0,"wAng":0,"uRotationCenter":0.5,"vRotationCenter":0.5,"wRotationCenter":0.5,"homogeneousRotationInUVTransform":false,"isBlocking":true,"name":"https://assets.babylonjs.com/textures/flare.png","hasAlpha":false,"getAlphaFromRGB":false,"level":1,"coordinatesIndex":0,"coordinatesMode":0,"wrapU":1,"wrapV":1,"wrapR":1,"anisotropicFilteringLevel":4,"isCube":false,"is3D":false,"is2DArray":false,"gammaSpace":true,"invertZ":false,"lodLevelInAlpha":false,"lodGenerationOffset":0,"lodGenerationScale":0,"linearSpecularLOD":false,"isRenderTarget":false,"animations":[],"invertY":true,"samplingMode":3,"_useSRGBBuffer":false},"isLocal":false,"animations":[],"beginAnimationOnStart":false,"beginAnimationFrom":0,"beginAnimationTo":60,"beginAnimationLoop":false,"startDelay":0,"renderingGroupId":0,"isBillboardBased":true,"billboardMode":7,"minAngularSpeed":0,"maxAngularSpeed":0,"minSize":0.1,"maxSize":0.94,"minScaleX":1,"maxScaleX":3,"minScaleY":1,"maxScaleY":3,"minEmitPower":1,"maxEmitPower":2,"minLifeTime":1,"maxLifeTime":2,"emitRate":300,"gravity":[0,0,0],"noiseStrength":[10,10,10],"color1":[0.47058823529411764,0.21176470588235294,0.8588235294117647,1],"color2":[0.27058823529411763,0.058823529411764705,0.24313725490196078,1],"colorDead":[0.9803921568627451,0.9647058823529412,0.9647058823529412,1],"updateSpeed":0.012,"targetStopDuration":0,"blendMode":0,"preWarmCycles":0,"preWarmStepOffset":1,"minInitialRotation":0,"maxInitialRotation":0,"startSpriteCellID":0,"spriteCellLoop":true,"endSpriteCellID":0,"spriteCellChangeSpeed":1,"spriteCellWidth":0,"spriteCellHeight":0,"spriteRandomStartCell":false,"isAnimationSheetEnabled":false,"colorGradients":[{"gradient":0.09,"color1":[0.23921568627450981,0.10980392156862745,0.5882352941176471,1],"color2":[0.4745098039215686,0.11764705882352941,0.11764705882352941,1]},{"gradient":0.34,"color1":[0.5607843137254902,0.17254901960784313,0.7843137254901961,1],"color2":[0.21568627450980393,0.13333333333333333,0.7529411764705882,1]}],"velocityGradients":[],"textureMask":[1,1,1,1],"customShader":null,"preventAutoStart":false};
+        const evilFlameParticleJson = {"name":"CPU particle system","id":"default system","capacity":10000,"disposeOnStop":false,"manualEmitCount":-1,"emitterId":"particleSource","particleEmitterType":{"type":"BoxParticleEmitter","direction1":[0,1,0],"direction2":[0,1,0],"minEmitBox":[-0.5,-0.5,-0.5],"maxEmitBox":[0.5,0.5,0.5]},"texture":{"tags":null,"url":"https://assets.babylonjs.com/textures/flare.png","uOffset":0,"vOffset":0,"uScale":1,"vScale":1,"uAng":0,"vAng":0,"wAng":0,"uRotationCenter":0.5,"vRotationCenter":0.5,"wRotationCenter":0.5,"homogeneousRotationInUVTransform":false,"isBlocking":true,"name":"https://assets.babylonjs.com/textures/flare.png","hasAlpha":false,"getAlphaFromRGB":false,"level":1,"coordinatesIndex":0,"coordinatesMode":0,"wrapU":1,"wrapV":1,"wrapR":1,"anisotropicFilteringLevel":4,"isCube":false,"is3D":false,"is2DArray":false,"gammaSpace":true,"invertZ":false,"lodLevelInAlpha":false,"lodGenerationOffset":0,"lodGenerationScale":0,"linearSpecularLOD":false,"isRenderTarget":false,"animations":[],"invertY":true,"samplingMode":3,"_useSRGBBuffer":false},"isLocal":false,"animations":[],"beginAnimationOnStart":false,"beginAnimationFrom":0,"beginAnimationTo":60,"beginAnimationLoop":false,"startDelay":0,"renderingGroupId":0,"isBillboardBased":true,"billboardMode":7,"minAngularSpeed":0,"maxAngularSpeed":0,"minSize":0.1,"maxSize":0.94,"minScaleX":1,"maxScaleX":2,"minScaleY":1,"maxScaleY":2,"minEmitPower":1,"maxEmitPower":1.6,"minLifeTime":1,"maxLifeTime":2,"emitRate":50,"gravity":[0,0,0],"noiseStrength":[10,10,10],"color1":[0.47058823529411764,0.21176470588235294,0.8588235294117647,1],"color2":[0.27058823529411763,0.058823529411764705,0.24313725490196078,1],"colorDead":[0.9803921568627451,0.9647058823529412,0.9647058823529412,1],"updateSpeed":0.012,"targetStopDuration":0,"blendMode":0,"preWarmCycles":0,"preWarmStepOffset":1,"minInitialRotation":0,"maxInitialRotation":0,"startSpriteCellID":0,"spriteCellLoop":true,"endSpriteCellID":0,"spriteCellChangeSpeed":1,"spriteCellWidth":0,"spriteCellHeight":0,"spriteRandomStartCell":false,"isAnimationSheetEnabled":false,"colorGradients":[{"gradient":0.09,"color1":[0.23921568627450981,0.10980392156862745,0.5882352941176471,1],"color2":[0.4745098039215686,0.11764705882352941,0.11764705882352941,1]},{"gradient":0.34,"color1":[0.5607843137254902,0.17254901960784313,0.7843137254901961,1],"color2":[0.21568627450980393,0.13333333333333333,0.7529411764705882,1]}],"textureMask":[1,1,1,1],"customShader":null,"preventAutoStart":false};
+        var particleSystem = new BABYLON.ParticleSystem.Parse(evilFlameParticleJson,scene,"",false);
+        var particleSource = new BABYLON.AbstractMesh("particleSource", scene);
+        particleSource.position = new BABYLON.Vector3(1,2.51,2.5);
+        particleSystem.emitter = particleSource;
+
+
+        
+
+    };
+    
+
+
 
     return scene;
 };
