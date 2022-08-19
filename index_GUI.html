@@ -82,10 +82,43 @@
     // Default intensity is 1. Let's dim the light a small amount
     light.intensity = 0.7;
 
+    //
+    let TitleGUIModeFlag = true;
+    let skybox;
 
+    //Title GUI
     let GameTitleGUITexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("GUI", true, scene);  
     let GameTitleLoadedGUI = await GameTitleGUITexture.parseFromURLAsync("./GUI/GameTitleGUI.json");
  
+    //Menu GUI
+    let GameMenuGUITexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("GUI", true, scene);  
+    let GameMenuLoadedGUI = await GameMenuGUITexture.parseFromURLAsync("./GUI/GameMenu.json");
+
+
+    let GameTitleGUI =GameTitleGUITexture.getControlByName("Background_title");
+    GameTitleGUI.isVisible= true;
+
+    let GameMenuGUI =GameMenuGUITexture.getControlByName("Background_menu");
+    GameMenuGUI.isVisible= false;
+
+
+    //Setting Button on Title GUI
+    let GameTitleGUI_SettingButton = GameTitleGUITexture.getControlByName("SettingButton");
+
+    //Weapon info text on Menu GUI
+    let GameMenuGUI_WeaponNameText = GameMenuGUITexture.getControlByName("Weapon Name");
+    let GameMenuGUI_WeaponAttackText = GameMenuGUITexture.getControlByName("Weapon Attack");
+    let GameMenuGUI_WeaponAbilityText = GameMenuGUITexture.getControlByName("Weapon Ability");
+
+    //OK button on Menu GUI
+    let GameMenuGUI_OKButton = GameMenuGUITexture.getControlByName("Button");
+   
+
+    let GameMenuGUI_gameCharacterImage = GameMenuGUITexture.getControlByName("CharacterImage");
+    GameMenuGUI_gameCharacterImage.source = "./images/SwordModeCharacter.jpg";
+
+
+
     var planeOpts = {
 			height: 5.4762, 
 			width: 7.3967, 
@@ -97,15 +130,90 @@
 	var vidPos = (new BABYLON.Vector3(0,0,0.1))
     ANote0Video.position = vidPos;
 	var ANote0VideoMat = new BABYLON.StandardMaterial("m", scene);
+    
 	var ANote0VideoVidTex = new BABYLON.VideoTexture("vidtex","movies/gun_battle_v2.mp4", scene);
+  
 	ANote0VideoMat.diffuseTexture = ANote0VideoVidTex;
 	ANote0VideoMat.roughness = 1;
 	ANote0VideoMat.emissiveColor = new BABYLON.Color3.White();
+
+
 	ANote0Video.material = ANote0VideoMat;
-    Note0VideoVidTex.video.play();
+   // ANote0VideoVidTex.video.stop();
+    ANote0Video.visibility = 1;
+
+    skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:10000.0}, scene);
+        const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+        skyboxMaterial.backFaceCulling = false;
+        const files = [
+            "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/Space/space_left.jpg",
+            "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/Space/space_up.jpg",
+            "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/Space/space_front.jpg",
+            "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/Space/space_right.jpg",
+            "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/Space/space_down.jpg",
+            "https://raw.githubusercontent.com/BabylonJS/Babylon.js/master/packages/tools/playground/public/textures/Space/space_back.jpg"
+        
+        ];
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture.CreateFromImages(files, scene);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    skyboxMaterial.disableLighting = true;
+    skybox.material = skyboxMaterial;	
+    camera.useAutoRotationBehavior = true;
+    camera.autoRotationBehavior.idleRotationWaitTime = 0;
+    skybox.visibility=0;
 
 
 
+    GameTitleGUI_SettingButton.onPointerClickObservable.add( () => {  
+         TitleGUIModeFlag = false;
+         GameTitleGUI.isVisible = false;
+         GameMenuGUI.isVisible = true;
+
+         // Invisible video
+         ANote0Video.visibility = 0;
+
+        // Menu mode
+        skybox.visibility=1;
+
+
+
+        //
+
+    });
+
+    GameMenuGUI_OKButton.onPointerClickObservable.add( () => { 
+        console.log("pressed");//not working
+         TitleGUIModeFlag = true;
+         GameTitleGUI.isVisible = true;
+         GameMenuGUI.isVisible = false;
+         skybox.visibility=0;
+         ANote0Video.visibility = 1;
+    });
+
+
+    // Works at only "Menu" mode
+    scene.onKeyboardObservable.add((e)=>{
+      if(  TitleGUIModeFlag == false){
+            if(e.event.type=='keydown' && e.event.code=='ArrowLeft'){
+                //Sword
+                GameMenuGUI_WeaponNameText.text = " Name : Photon Sword";
+                GameMenuGUI_WeaponAttackText.text = "Attack : 520";
+                GameMenuGUI_WeaponAbilityText.text = " Ability : Lightning slash";
+                GameMenuGUI_gameCharacterImage.source = "./images/SwordModeCharacter.jpg";
+            }if(e.event.type=='keydown' && e.event.code=='ArrowRight'){
+                //Aerial Shotgun
+                GameMenuGUI_WeaponNameText.text = "Name : Aerial Shotgun";
+                GameMenuGUI_WeaponAttackText.text = "Attack : 200";
+                GameMenuGUI_WeaponAbilityText.text = "Ability : Charge bullets";
+                GameMenuGUI_gameCharacterImage.source = "./images/GunModeCharacter.jpg";
+            }
+        }
+    })
+
+
+
+
+    //
 
 
 

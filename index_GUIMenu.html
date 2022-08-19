@@ -96,18 +96,13 @@
     let GameMenuGUITexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("GUI", true, scene);  
     let GameMenuLoadedGUI = await GameMenuGUITexture.parseFromURLAsync("./GUI/GameMenu.json");
 
-    var planeOpts = {
-			height: 5.4762, 
-			width: 7.3967, 
-			sideOrientation: BABYLON.Mesh.DOUBLESIDE
-	};
-
+    let gameMenuGUI =GameMenuGUITexture.getControlByName("Background_menu");
+    gameMenuGUI.isVisible= false;
 
     let gameCharacterDisplay = GameMenuGUITexture.getControlByName("CharacterDisplay");
     console.log(gameCharacterDisplay);
 
-    let gameMenuGUI =GameMenuGUITexture.getControlByName("Background_menu");
-    gameMenuGUI.isVisible= false;
+
 
     let gameCharacterImage = GameMenuGUITexture.getControlByName("CharacterImage");
     gameCharacterImage.source = "./images/SwordModeCharacter.jpg";
