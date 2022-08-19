@@ -76,6 +76,7 @@
     camera.attachControl(canvas, true);
     camera.alpha= 1.742;
     camera.beta =1.578;
+    camera.useAutoRotationBehavior = false;
  
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
     var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
@@ -111,17 +112,19 @@
     let GameMenuGUI_WeaponAbilityText = GameMenuGUITexture.getControlByName("Weapon Ability");
 
     //OK button on Menu GUI
-    let GameMenuGUI_OKButton = GameMenuGUITexture.getControlByName("Button");
+    let GameMenuGUI_OKButton = GameMenuGUITexture.getControlByName("OKButton");
    
 
     let GameMenuGUI_gameCharacterImage = GameMenuGUITexture.getControlByName("CharacterImage");
     GameMenuGUI_gameCharacterImage.source = "./images/SwordModeCharacter.jpg";
 
 
+//    height: 5.4762, 
+//			width: 7.3967, 
 
     var planeOpts = {
-			height: 5.4762, 
-			width: 7.3967, 
+			height: 6.4762, 
+			width: 10.3967, 
 			sideOrientation: BABYLON.Mesh.DOUBLESIDE
 	};
 	var ANote0Video = BABYLON.MeshBuilder.CreatePlane("plane", planeOpts, scene);
@@ -131,7 +134,7 @@
     ANote0Video.position = vidPos;
 	var ANote0VideoMat = new BABYLON.StandardMaterial("m", scene);
     
-	var ANote0VideoVidTex = new BABYLON.VideoTexture("vidtex","movies/gun_battle_v2.mp4", scene);
+	var ANote0VideoVidTex = new BABYLON.VideoTexture("vidtex","movies/sword_battle_v2.mp4", scene);
   
 	ANote0VideoMat.diffuseTexture = ANote0VideoVidTex;
 	ANote0VideoMat.roughness = 1;
@@ -158,8 +161,7 @@
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     skyboxMaterial.disableLighting = true;
     skybox.material = skyboxMaterial;	
-    camera.useAutoRotationBehavior = true;
-    camera.autoRotationBehavior.idleRotationWaitTime = 0;
+   
     skybox.visibility=0;
 
 
@@ -175,8 +177,9 @@
         // Menu mode
         skybox.visibility=1;
 
-
-
+        
+        camera.useAutoRotationBehavior = true;
+       
         //
 
     });
@@ -188,6 +191,11 @@
          GameMenuGUI.isVisible = false;
          skybox.visibility=0;
          ANote0Video.visibility = 1;
+
+        camera.alpha= 1.742;
+        camera.beta =1.578; 
+        camera.useAutoRotationBehavior = false;
+       // camera.autoRotationBehavior.idleRotationWaitTime = 0;
     });
 
 
