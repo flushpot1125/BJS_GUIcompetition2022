@@ -93,9 +93,8 @@
     light.intensity = 0.7;
 
 
-    let GameTitleGUITexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("GUI", true, scene);  
-    let GameTitleLoadedGUI = await GameTitleGUITexture.parseFromURLAsync("./GUI/GameMenu.json");
-    //let GameTitleLoadedGUI = await GameTitleGUITexture.parseFromURLAsync("./GUI/GameRefTitle.json");
+    let GameMenuGUITexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("GUI", true, scene);  
+    let GameMenuLoadedGUI = await GameMenuGUITexture.parseFromURLAsync("./GUI/GameMenu.json");
 
     var planeOpts = {
 			height: 5.4762, 
@@ -103,6 +102,41 @@
 			sideOrientation: BABYLON.Mesh.DOUBLESIDE
 	};
 
+
+    let gameCharacterDisplay = GameMenuGUITexture.getControlByName("CharacterDisplay");
+    console.log(gameCharacterDisplay);
+
+    let gameMenuGUI =GameMenuGUITexture.getControlByName("Background_menu");
+    gameMenuGUI.isVisible= false;
+
+    let gameCharacterImage = GameMenuGUITexture.getControlByName("CharacterImage");
+    gameCharacterImage.source = "./images/SwordModeCharacter.jpg";
+
+
+    let gameWeaponNameText = GameMenuGUITexture.getControlByName("Weapon Name");
+    let gameWeaponAttackText = GameMenuGUITexture.getControlByName("Weapon Attack");
+    let gameWeaponAbilityText = GameMenuGUITexture.getControlByName("Weapon Ability");
+   
+
+
+ 
+
+
+    scene.onKeyboardObservable.add((e)=>{
+            if(e.event.type=='keydown' && e.event.code=='ArrowLeft'){
+                //Sword
+                gameWeaponNameText.text = " Name : Photon Sword";
+                gameWeaponAttackText.text = "Attack : 520";
+                gameWeaponAbilityText.text = " Ability : Lightning slash";
+                gameCharacterImage.source = "./images/SwordModeCharacter.jpg";
+            }if(e.event.type=='keydown' && e.event.code=='ArrowRight'){
+                //Aerial Shotgun
+                gameWeaponNameText.text = "Name : Aerial Shotgun";
+                gameWeaponAttackText.text = "Attack : 200";
+                gameWeaponAbilityText.text = "Ability : Charge bullets";
+                gameCharacterImage.source = "./images/GunModeCharacter.jpg";
+            }
+    })
 
 
 

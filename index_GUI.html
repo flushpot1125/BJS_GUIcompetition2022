@@ -76,21 +76,16 @@
     camera.attachControl(canvas, true);
     camera.alpha= 1.742;
     camera.beta =1.578;
-   // camera.useAutoRotationBehavior = true;
-    //camera.autoRotationBehavior.idleRotationWaitTime = 0;
-
-
+ 
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
     var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-
     // Default intensity is 1. Let's dim the light a small amount
     light.intensity = 0.7;
 
 
     let GameTitleGUITexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("GUI", true, scene);  
     let GameTitleLoadedGUI = await GameTitleGUITexture.parseFromURLAsync("./GUI/GameTitleGUI.json");
-    //let GameTitleLoadedGUI = await GameTitleGUITexture.parseFromURLAsync("./GUI/GameRefTitle.json");
-
+ 
     var planeOpts = {
 			height: 5.4762, 
 			width: 7.3967, 
@@ -107,6 +102,11 @@
 	ANote0VideoMat.roughness = 1;
 	ANote0VideoMat.emissiveColor = new BABYLON.Color3.White();
 	ANote0Video.material = ANote0VideoMat;
+    Note0VideoVidTex.video.play();
+
+
+
+
 
 
 
