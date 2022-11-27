@@ -4,6 +4,8 @@ The repo contains the BJS gui system contents.
 
 https://forum.babylonjs.com/t/an-adventure-with-the-babylon-js-gui-system/31852/13  
 
+Playground  
+https://playground.babylonjs.com/#LQ6DS0  
 
 
 # Great 3D model 
